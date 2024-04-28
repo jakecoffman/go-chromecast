@@ -880,10 +880,14 @@ func (a *Application) LoadApp(appID, contentID string) error {
 	return nil
 }
 
-func (a *Application) QueueLoad(filenames []string, contentType string, transcode bool) error {
-	mediaItems, err := a.loadAndServeFiles(filenames, contentType, transcode)
-	if err != nil {
-		return errors.Wrap(err, "unable to load and serve files")
+func (a *Application) QueueLoad(urls []string, contentType string, transcode bool) error {
+	mediaItems := make([]mediaItem, len(urls))
+	for i, url := range urls {
+		mediaItems[i] = mediaItem{
+			filename:    "blah",
+			contentURL:  url,
+			contentType: contentType,
+		}
 	}
 	return a.QueueLoadItems(mediaItems, contentType)
 }
