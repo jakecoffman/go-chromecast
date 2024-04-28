@@ -912,7 +912,7 @@ func (a *Application) QueueLoadItems(mediaItems []mediaItem, contentType string)
 		PayloadHeader: cast.QueueLoadHeader,
 		CurrentTime:   0,
 		StartIndex:    0,
-		RepeatMode:    "REPEAT_OFF",
+		RepeatMode:    "REPEAT_ALL",
 		Items:         items,
 	})
 
