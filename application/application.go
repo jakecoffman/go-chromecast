@@ -369,20 +369,7 @@ func (a *Application) writePlayedItems() error {
 }
 
 func (a *Application) Update() error {
-	var recvStatus *cast.ReceiverStatusResponse
-	var err error
-	// Simple retry. We need this for when the device isn't currently
-	// available, but it is likely that it will come up soon. If the device
-	// has switch network addresses the caller is expected to handle that situation.
-	for i := 0; i < a.connectionRetries; i++ {
-		recvStatus, err = a.getReceiverStatus()
-		if err == nil {
-			break
-		}
-		a.log("error getting receiever status: %v", err)
-		a.log("unable to get status from device; attempt %d/5, retrying...", i+1)
-		time.Sleep(time.Second * 2)
-	}
+	recvStatus, err := a.getReceiverStatus()
 	if err != nil {
 		return err
 	}
@@ -402,14 +389,13 @@ func (a *Application) Update() error {
 		return nil
 	}
 
-	a.updateMediaStatus()
-
-	return nil
-
+	return a.updateMediaStatus()
 }
 
 func (a *Application) updateMediaStatus() error {
-	a.sendMediaConn(&cast.ConnectHeader)
+	if err := a.sendMediaConn(&cast.ConnectHeader); err != nil {
+		return errors.Wrap(err, "unable to connect to chromecast")
+	}
 
 	mediaStatus, err := a.getMediaStatus()
 	if err != nil {
